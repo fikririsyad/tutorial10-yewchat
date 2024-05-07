@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_agent::{Bridge, Bridged};
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 
 use crate::{User, services::websocket::WebsocketService};
 use crate::services::event_bus::EventBus;
@@ -89,13 +91,15 @@ impl Component for Chat {
                 match msg.message_type {
                     MsgTypes::Users => {
                         let users_from_message = msg.data_array.unwrap_or_default();
+                        let seed_pool = ["Lucy", "Felix", "Lola", "Midnight", "Pumpkin"];
+                        let mut rng = thread_rng();
                         self.users = users_from_message
-                            .iter()
+                        .iter()
                             .map(|u| UserProfile {
                                 name: u.into(),
                                 avatar: format!(
-                                    "https://avatars.dicebear.com/api/adventurer-neutral/{}.svg",
-                                    u
+                                    "https://api.dicebear.com/8.x/notionists-neutral/svg?seed={}",
+                                    seed_pool.choose(&mut rng).unwrap()
                                 )
                                 .into(),
                             })
